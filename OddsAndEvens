@@ -1,0 +1,50 @@
+import java.util.*;
+public class OddsAndEvens {
+    public static void main(String[] args) {
+
+        // part 1 - Pick odds or evens
+        System.out.println("Let's play a game called \"Odds and Evens\"");
+        System.out.print("What is your name?");
+        Scanner input = new Scanner(System.in);
+        String playerName = input.nextLine();
+        System.out.print("Hi " + playerName + ", which do you choose? (O)dds or (E)vens?");
+        String userPick = input.nextLine();
+
+        if (userPick.equals("O")) {
+            System.out.println(playerName + " has picked odds! The computer will be evens.");
+        } else if (userPick.equals("E")) {
+            System.out.println(playerName + " has picked evens! The computer will be odds.");
+        }
+        System.out.println("-----------------------------------------------------");
+
+        //Part 2 - Play the Game, takes in computer's "fingers" number
+        System.out.print("How many \"fingers\" do you put out?");
+        int userNumber = input.nextInt();
+        Random rand = new Random();
+        int computerNumber = rand.nextInt(6);
+        System.out.println("The computer plays " + computerNumber + " " + "\"fingers\". ");
+        System.out.println("-----------------------------------------");
+
+        // Part 3 - Who won? calculate sum, check odd and even.
+        int sum = userNumber + computerNumber;
+        System.out.println(userNumber + " + " + computerNumber + " = " + sum);
+        boolean oddOrEven = sum % 2 == 0;
+        if (oddOrEven ==true ) {
+            System.out.println(sum + " is ...even!");
+                if(userPick.equals("O")){
+                    System.out.println("That means computer win!"  );
+                }else if(userPick.equals("E")){
+                    System.out.println("That means " + playerName + " wins!" );
+                }
+        } else {
+            System.out.println(sum + " is ...odd!");
+            if(userPick.equals("E")){
+                System.out.println("That means computer win!"  );
+            }else if(userPick.equals("O")){
+                System.out.println("That means " + playerName + " wins!" );
+            }
+        }
+        System.out.println("-----------------------------------------");
+
+    }
+}
