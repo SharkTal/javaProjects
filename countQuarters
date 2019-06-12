@@ -1,0 +1,27 @@
+public class Quarters {
+    public static void main(String[] args) {
+        int quarters= countQuarters(1370);
+        System.out.println(quarters);
+
+    }
+
+
+    public static int countQuarters(int a) {
+        int output = 0;
+        if (a < 25) {
+            output = 0;
+        } else if (a < 100) {
+            output = a / 25;
+        } else {
+            String aString = Integer.toString(a);
+            String centString = aString.substring(aString.length() - 2);
+            int cents = Integer.parseInt(centString);
+            if (cents < 25) {
+                output =0;
+            } else if (cents < 100) {
+                output = cents / 25;
+            }
+        }
+        return output;
+    }
+}
