@@ -1,0 +1,231 @@
+package Module_2_Project;
+
+import java.util.Scanner;
+
+public class FractionCalculator {
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		// starting lines
+		System.out.println("This program is a fraction calculator" + "\n"
+				+ "It will add, subtract, multiply and divide fraction until you type Q to quit." + "\n"
+				+ "Please enter your fractions in the form a/b, where a and b are integers.");
+		System.out.println("-----------------------------------------------------------------");
+		// Scanner
+		Scanner input = new Scanner(System.in);
+		System.out.print("Please enter an operation (+, -, /, *, = or Q to quit): ");
+		String op = input.nextLine();
+
+		// Step 2. valid the operation input with a method, catch the returned value,
+		// i.e. valid operation
+
+		String oper = opValid(op);
+
+		// while loop to run until user enters q
+
+		while (!op.equalsIgnoreCase("q")) {
+			// ask user to enter a fraction or integer
+			System.out.print("Please enter the first fraction(a/b) or integer (a): ");
+			String frac1 = input.nextLine();
+			// try and catch, throw out input is empty
+			// a method to valid the input and check whether it is a fraction or an integer
+			// or none of them
+			// validFrac(frac1);
+
+			// get fraction, that means to create a Fraction client
+			// once the input is valid
+			// to create a Fraction client, need to know numerator and denominator
+			int num1 = 0;
+			int deno1 = 1;
+			Fraction f1 = new Fraction();
+			// if it is valid, i.e validFrac(frac1) == true
+			// I met obstacles here. The reason was that I put the promotion require into
+			// the validFrac
+			// Even the validFrac return true, but num1 = Integer.parseInt(frac1) still
+			// throw out an exception
+			// Since the validFrac is boolean, it cannot return an valid frac back.
+			// Only the while loop can create an valid fraction, and pass it to next step
+			while (validFrac(frac1) == false) {
+				System.out.print("Invalid fraction. Please try again: ");
+				frac1 = input.nextLine();
+				validFrac(frac1);
+			}
+
+			// check does it has /, two possible result, yes or no
+			// first, no /, then it only has a,i.e numerator
+			if (frac1.indexOf("/") == -1) {
+				num1 = Integer.parseInt(frac1);
+				f1 = new Fraction(num1);
+			} else {
+				// second situation, it has /, then get numerator and denominator, using
+				// substring
+				int key = frac1.indexOf("/");
+				num1 = Integer.parseInt(frac1.substring(0, key));
+				deno1 = Integer.parseInt(frac1.substring(key + 1));
+				f1 = new Fraction(num1, deno1);
+			}
+
+			// ask user to enter second number or fraction, and valid, get the second
+			// fraction
+
+			// if frac1 is zero, then the second input can not be zero integer
+
+			System.out.print("Please enter the second fraction(a/b) or integer (a): ");
+			String frac2 = input.nextLine();
+
+			int num2 = 0;
+			int deno2 = 1;
+			Fraction f2 = new Fraction();
+			while (validFrac(frac2) == false) {
+				System.out.print("Invalid fraction.Please try again: ");
+				frac2 = input.nextLine();
+				validFrac(frac2);
+			}
+
+			// check does it has /, two possible result, yes or no
+			// first, no /, then it only has a,i.e numerator
+			if (frac2.indexOf("/") == -1) {
+				num2 = Integer.parseInt(frac2);
+				f2 = new Fraction(num2);
+			} else {
+				// second situation, it has /, then get numerator and denominator, using
+				// substring
+				int key = frac2.indexOf("/");
+				num2 = Integer.parseInt(frac2.substring(0, key));
+				deno2 = Integer.parseInt(frac2.substring(key + 1));
+				f2 = new Fraction(num2, deno2);
+			}
+
+			// step 3. put them together, means to get the operation and calculate, five
+			// operation situations
+			if (oper.equals("+")) {
+				Fraction outputF = f1.add(f2);
+				System.out.println(f1.toString() + " + " + f2.toString() + " = " + outputF.toString());
+			} else if (oper.equals("-")) {
+				Fraction outputF = f1.subtract(f2);
+				System.out.println(f1 + " - " + f2 + " = " + outputF.toString());
+			} else if (oper.equals("*")) {
+				Fraction outputF = f1.multiply(f2);
+				System.out.println(f1 + " * " + f2 + " = " + outputF.toString());
+			} else if (oper.equals("/")) {
+				Fraction outputF = f1.divide(f2);
+				System.out.println(f1 + " / " + f2 + " = " + outputF.toString());
+			} else if (oper.equals("=")) {
+				System.out.println(f1 + " = " + f2 + " is " + f1.equals(f2));
+
+			}
+
+			// Step 4. Ask a new operator and valid
+			System.out.println("-----------------------------------------------------------------");
+			System.out.print("Please enter an operation (+, -, /, *, = or Q to quit): ");
+			op = input.nextLine();
+
+			// valid the operation input with a method, catch the returned value, i.e. valid
+			// operation
+
+			oper = opValid(op);
+		}
+	}
+
+	// method to valid operations
+	public static String opValid(String str) {
+		// boolean isValid = false;
+		String oper = "";
+		if (str.equals("+") || str.equals("-") || str.equals("/") || str.equals("*") || str.equals("=")
+				|| str.equalsIgnoreCase("q")) {
+			oper = str;
+		} else {
+			Scanner input = new Scanner(System.in);
+			System.out.print("Please enter an operation (+, -, /, *, = or Q to quit): ");
+			String op = input.nextLine();
+			oper = opValid(op);
+		}
+
+		return oper;
+	}
+
+	// a boolean method to valid the input and check whether it is a fraction or an
+	// integer or none of them
+	public static boolean validFrac(String str) {
+		if (str.isEmpty()) {
+			return false;
+		}
+		boolean isValid = false;
+		Scanner input = new Scanner(System.in);
+		// step 1. check whether the string contains other characters than digits,
+		// hyphen and slash
+
+		// check whether the string has more characters than digits and one hyphen and
+		// one /
+		// first possibility, the first char is -, then remove it
+		if (str.startsWith("-")) {
+			str = str.substring(1);
+			// landmark check, where i failed once
+			// System.out.println(str);
+		}
+
+		// Here a else condition is unnecessary, considering has assigned new
+		// string-str.substring(1) into str.
+
+		// step 2. check whether it has another hyphen
+		if (!secondHyphen(str)) {
+			// Step 3. check whether it has a slash, yes or no
+
+			if (checkSlash(str)) {
+				// Step 4. it has a slash,get the numerator and denominator
+				int key = str.indexOf("/");
+				// landmark check, where I failed once
+				// System.out.println(key);
+				// Step 6. check whether both are non-empty
+				if (key != 0 && key != str.length() - 1) {
+					String num = str.substring(0, key);
+					String deno = str.substring(key + 1);
+					// Step 7. both are non-empty, check both are entirely made of numbers
+					if (isAllNum(num) && isAllNum(deno)) {
+						// Step 9. both are entirely made of numbers, check whether denominator is zero
+						if (!deno.equals("0")) {
+							// Step 11. final step
+							isValid = true;
+						}
+					}
+				}
+			} else {
+				// check is the string entirely made of numbers
+				if (isAllNum(str)) {
+					isValid = true;
+				}
+			}
+
+		}
+
+		return isValid;
+	}
+
+	public static boolean secondHyphen(String str) {
+		boolean secHyphen = false;
+		if (str.indexOf("-") != -1) {
+			secHyphen = true;
+		}
+		return secHyphen;
+	}
+
+	public static boolean checkSlash(String str) {
+		boolean hasSlash = false;
+		if (str.indexOf("/") != -1) {
+			hasSlash = true;
+		}
+
+		return hasSlash;
+	}
+
+	public static boolean isAllNum(String str) {
+		// convert to char[], using isdigits method or using regular expressions
+
+		if (str.matches("[0-9]*") == true) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+}
