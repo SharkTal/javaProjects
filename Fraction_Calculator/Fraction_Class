@@ -1,0 +1,142 @@
+package Module_2_Project;
+
+public class Fraction {
+	private int numerator;
+	private int denominator;
+
+	// two parameter constructor
+	public Fraction(int numerator, int denominator) {
+		if (denominator == 0) {
+			// no need to use try catch
+			throw new IllegalArgumentException("Argument 'denominator is zero'");
+		} else if (denominator < 0) {
+			this.denominator = -denominator;
+			this.numerator = -numerator;
+		} else {
+			this.numerator = numerator;
+			this.denominator = denominator;
+		}
+	}
+
+	// one parameter constructor
+
+	public Fraction(int numerator) {
+		this.numerator = numerator;
+		this.denominator = 1;
+	}
+
+	// zero parameter constructor
+
+	public Fraction() {
+		this.numerator = 0;
+		this.denominator = 1;
+
+	}
+
+	// Methods
+	public int getNumerator() {
+		return this.numerator;
+	}
+
+	public int getDenominator() {
+		return this.denominator;
+	}
+
+	public String toString() {
+
+		if (this.denominator == 1) {
+			return String.valueOf(this.numerator);
+		} else {
+			return this.numerator + "/" + this.denominator;
+		}
+
+	}
+
+	public double toDouble() {
+		return (this.numerator / this.denominator);
+	}
+
+	// I was puzzled how to return a new Fraction. Obviously, create a new client
+	// using new
+	public Fraction add(Fraction other) {
+		int gcd = gcd((this.numerator * other.denominator + other.numerator * this.denominator),
+				this.denominator * other.denominator);
+		return new Fraction((this.numerator * other.denominator + other.numerator * this.denominator) / gcd,
+				this.denominator * other.denominator / gcd);
+	}
+
+	// subtract
+	public Fraction subtract(Fraction other) {
+		int gcd = gcd((this.numerator * other.denominator - other.numerator * this.denominator),
+				this.denominator * other.denominator);
+		if (gcd == 0) {
+			return new Fraction();
+		}
+		return new Fraction((this.numerator * other.denominator - other.numerator * this.denominator) / gcd,
+				this.denominator * other.denominator / gcd);
+	}
+
+	// multiply
+
+	public Fraction multiply(Fraction other) {
+		int gcd = gcd((other.getNumerator() * this.numerator), (other.getDenominator() * this.denominator));
+		return new Fraction((other.getNumerator() * this.numerator) / gcd,
+				(other.getDenominator() * this.denominator) / gcd);
+	}
+
+	// divide
+	public Fraction divide(Fraction other) {
+		int gcd = gcd((this.numerator * other.denominator), (this.denominator * other.numerator));
+		if (gcd == 0) {
+			return new Fraction();
+		}
+		return new Fraction((this.numerator * other.denominator) / gcd, (this.denominator * other.numerator) / gcd);
+	}
+
+	// a boolean to check if two fractions are equal
+	// this the class method, not a method in main, so only requires one parameter
+	// to compare this Fraction and client Fraction
+
+	public boolean equals(Object other) {
+		// check whether or not parameter is a Fraction Object
+		boolean isEqual = false;
+		/*
+		 * if(this == other) { isEqual = true; }
+		 * 
+		 * if(other == null || other.getClass() != this.getClass()) { isEqual = false; }
+		 */
+		// Type casting of the argument
+		Fraction castedObj = (Fraction) other;
+
+		int gcd1 = gcd(this.numerator, this.denominator);
+		Fraction lowestF = new Fraction(this.numerator / gcd1, this.denominator / gcd1);
+
+		int gcd2 = gcd(castedObj.getNumerator(), castedObj.getDenominator());
+		Fraction lowestF2 = new Fraction(castedObj.getNumerator() / gcd2, castedObj.getDenominator() / gcd2);
+
+		if (lowestF.getNumerator() == lowestF2.getNumerator()
+				&& lowestF.getDenominator() == lowestF2.getDenominator()) {
+			isEqual = true;
+		}
+
+		return isEqual;
+	}
+
+	public void toLowestTerms() {
+		int gcd = gcd(this.numerator, this.denominator);
+		this.numerator /= gcd;
+		this.denominator /= gcd;
+	}
+
+	public int gcd(int num, int den) {
+		if (num == 0) {
+			return num;
+		}
+		while (num != 0 && den != 0) {
+			int rem = num % den;
+			num = den;
+			den = rem;
+		}
+		return num;
+	}
+}
