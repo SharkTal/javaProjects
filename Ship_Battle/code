@@ -1,0 +1,337 @@
+package Module_1_Project_BattleShips;
+import java.util.Arrays;
+import java.util.Scanner;
+public class battleShips {
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+		Scanner input = new Scanner(System.in);
+		// Step 1- Create the empty ocean map
+
+		System.out.println("**** Welcome to Battle Ships game ****");
+		System.out.println("Right now, the sea is empty." + "\n");
+
+		// create the empty sea
+
+		String[][] ocean = new String[10][10];
+		int row = ocean.length;
+		int i = 0;
+		int colomun = ocean[i].length;
+		System.out.println("  0123456789");
+		for (i = 0; i < row; i++) {
+			System.out.print(i + "|");
+			for (int j = 0; j < colomun; j++) {
+				ocean[i][j] = " ";
+				System.out.print(ocean[i][j]);
+			}
+			System.out.println("|" + i);
+		}
+		System.out.println("  0123456789");
+		System.out.println();
+
+		// 2. deploy player's ships
+		System.out.println("Depoly your ships: ");
+		String[][] deployMyShips = deMyShips();
+		// transfer string array to integer array
+
+		System.out.println();
+		for (String[] val : deployMyShips) {
+			int x = Integer.parseInt(val[0]);
+			int y = Integer.parseInt(val[1]);
+			ocean[x][y] = "@";
+		}
+
+	
+		// 3. deploy computer's ships
+		System.out.println();
+		System.out.println("Computer is deploying ships");
+
+		String[][] temp = new String[10][2];
+		for (i = 0; i < 5; i++) {
+			temp[i] = deployMyShips[i];
+		}
+
+		String[][] computerShips = deComShips(temp);
+
+		// mark computer's ships's location on ocean as $, but not show on ocean
+
+		for (String[] val : computerShips) {
+			int x = Integer.parseInt(val[0]);
+			int y = Integer.parseInt(val[1]);
+			ocean[x][y] = "$";
+		}
+		
+		// print out
+		System.out.println("  0123456789");
+		for (i = 0; i < row; i++) {
+			System.out.print(i + "|");
+			for (int j = 0; j < colomun; j++) {
+				if(ocean[i][j] != "$") {
+						System.out.print(ocean[i][j]);
+				}
+			
+			}
+			System.out.println( "|" + i);
+		}
+		System.out.println("  0123456789");
+
+
+		// 4. Battle
+
+		System.out.println();
+		System.out.println("YOUR TURN");
+
+		// create an array to store the guessed locations
+		// set row to 100 to leave no stone unturned
+
+		int deadShips = 0;
+		// dSOP stands for dead Ships Of Player
+		int  dSOP= 0;
+		// cDS stands for computer's dead ships
+		int cDS = 0;
+		// call method player to guess, b stands for bingo
+		while (deadShips < 5) {
+			// player fires
+			// need a recursion to promote player to input two integers until they are valid
+			// need a boolean method to accomplish the mission
+			String[] playerFire = playerGuess();
+			
+			if (isChecked(playerFire, ocean) == true) {
+				System.out.println("The location has been checked.");
+				playerFire = playerGuess();
+				isChecked(playerFire, ocean);
+			} else {
+				int x = Integer.parseInt(playerFire[0]);
+				int y = Integer.parseInt(playerFire[1]);
+				if (ocean[x][y] == " ") {
+					System.out.println("Shit, you missed");
+					ocean[x][y] = "-";
+				} else if (ocean[x][y] == "@") {
+					System.out.println("Oh no, your sunk own ship");
+					ocean[x][y] = "x";
+					dSOP += 1;
+					deadShips += 1;
+				} else {
+					System.out.println("Boom! You sunk one of computer's ships");
+					ocean[x][y] = "!";
+					cDS += 1;
+					deadShips += 1;
+				}
+			}
+
+			// computer fire
+
+			System.out.println();
+			System.out.println("COMPUTER'S TURN");
+			String[] computerFire = computerGu();
+
+			if (isChecked(computerFire, ocean) == true) {
+				System.out.println("The location has been checked");
+				computerFire = computerGu();
+				isChecked(computerFire, ocean);
+			} else {
+
+				int r = Integer.parseInt(computerFire[0]);
+				int c = Integer.parseInt(computerFire[1]);
+
+				if (ocean[r][c] == " ") {
+					System.out.println("Computer missed");
+					ocean[r][c] = "-";
+				} else if (ocean[r][c] == "@") {
+					System.out.println("Computer sunk your one ship");
+					ocean[r][c] = "x";
+					dSOP += 1;
+					deadShips += 1;
+				} else {
+					System.out.println("Computer sunk one of own ships");
+					ocean[r][c] = "!";
+					cDS += 1;
+					deadShips += 1;
+				}
+
+			}
+
+			System.out.println();
+
+			System.out.println("  0123456789  ");
+			for (i = 0; i < row; i++) {
+				System.out.print(i + "|");
+				for (int j = 0; j < colomun; j++) {
+					if (ocean[i][j] != "$") {
+						System.out.print(ocean[i][j]);
+					}
+
+				}
+				System.out.println("|" + i);
+			}
+			System.out.println("  0123456789  ");
+			
+			System.out.println();
+
+		}
+		
+		// 5 . Game over
+		
+		if(dSOP < cDS) {
+			System.out.println("Your ships: " + ( 5 - dSOP) + " | " + "Computer ships: " + (5 - cDS));
+			System.out.println("Hooray! You win the battle :)");
+		}else{
+			System.out.println("Your ships: " + ( 5 - dSOP) + " | " + "Computer ships: " + ( 5 - cDS));
+			System.out.println("Computer win the battle. One more game :)");
+		}
+	}
+	// main method boundary 
+	// input numbers' validation
+	public static boolean numValidation(int a) {
+		boolean isValid = false;
+		if (a >= 0 && a <= 9) {
+			isValid = true;
+		}
+		return isValid;
+	}
+
+	public static String[][] deMyShips() {
+		Scanner input = new Scanner(System.in);
+		String[][] myships = new String[5][2];
+		try {
+			for (int i = 0; i < 5; i++) {
+			
+				System.out.print("Enter X for ship " + (i + 1) + " : ");
+				String x = input.nextLine();
+				// null exception throw out
+				
+				if (numValidation(Integer.parseInt(x)) == true) {
+					myships[i][0] = x;
+
+					System.out.print("Enter Y for ship: " + (i + 1) + " : ");
+					String y = input.nextLine();
+					if (numValidation(Integer.parseInt(y)) == true) {
+						myships[i][1] = y;
+						if (i >= 1) {
+							for (int s = 0; s < i; s++) {
+								if (Arrays.equals(myships[s], myships[i]) == true) {
+									System.out.println("The place is occupied.");
+									i -= 1;
+								}
+							}
+
+						}
+
+					} else {
+						System.out.println("Not valid number");
+						i -= 1;
+					}
+				} else {
+					System.out.println("Not valid number");
+					i -= 1;
+				}
+			}
+			}catch(NumberFormatException nfe) {
+				System.out.println("Not a valid integer!");
+				myships = deMyShips();
+			}
+		
+		return myships;
+	}
+
+	// computers's ships
+
+	public static String[][] deComShips(String[][] strArr) {
+		String[][] comShips = new String[5][2];
+		for (int i = 0; i < 5; i++) {
+
+			for (int j = 0; j < 2; j++) {
+				// math.random to generate 5 number between 0-9, no need to check validation
+				int num = (int) (Math.random() * 10);
+				String number = Integer.toString(num);
+				comShips[i][j] = number;
+
+			}
+			
+			//A boolean to valid the String array
+			if(isComChoiceValid(comShips[i], strArr)) {
+				System.out.println("Computer's ship " + (i +1) + " is deployed");
+				strArr[i + 5] = comShips[i];
+			}else {
+				System.out.println("Location is unavailable");
+				i -= 1;
+			}
+
+		}
+
+		return comShips;
+	}
+// boolean to valid computer's deployment
+	
+	public static boolean isComChoiceValid(String[] strArr, String[][] strArrs) {
+		boolean isValid = false;
+		for(String[] val : strArrs) {
+			if(!val.equals(strArr) ){
+			 isValid = true;
+			}
+		}
+		return isValid;
+	}
+	
+	
+	
+	// player guess method
+	public static String[] playerGuess() {
+		Scanner input = new Scanner(System.in);
+		String[] pGuess = new String[2];
+		try {
+			System.out.print("Enter X coordinate: ");
+			String x = input.nextLine();
+			int xInt = Integer.parseInt(x);
+			if (numValidation(xInt) == true) {
+				pGuess[0] = x;
+				System.out.print("Enter Y coordinate: ");
+				String y = input.nextLine();
+				int yInt = Integer.parseInt(y);
+				if (numValidation(yInt) == true) {
+					pGuess[1] = y;
+				} else {
+					System.out.println("y is invalid number");
+					pGuess = playerGuess();
+				}
+			} else {
+				System.out.println("x is invalid number");
+				pGuess =playerGuess();
+			}
+
+		}catch(NumberFormatException nfe) {
+			System.out.println("Not a valid integer!");
+			pGuess = playerGuess();
+		}
+		
+		return pGuess;
+	}
+
+	public static String[] computerGu() {
+		String[] computerGuess = new String[2];
+		int x = (int) (Math.random() * 10);
+		int y = (int) (Math.random() * 10);
+
+		String strX = Integer.toString(x);
+		String strY = Integer.toString(y);
+
+		computerGuess[0] = strX;
+		computerGuess[1] = strY;
+
+		return computerGuess;
+	}
+
+	public static boolean isChecked(String[] arr, String[][] benchMarkArr) {
+		boolean output = false;
+
+		int x = Integer.parseInt(arr[0]);
+		int y = Integer.parseInt(arr[1]);
+
+		if (benchMarkArr[x][y] == "-" || benchMarkArr[x][y] == "x" || benchMarkArr[x][y] == "!") {
+			System.out.println("The location has been checked");
+			output = true;
+		}
+
+		return output;
+	}
+
+}
